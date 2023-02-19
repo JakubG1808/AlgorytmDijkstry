@@ -13,7 +13,7 @@ struct wierzcholek
     int status;
     int k_dist; /// ODLEGLOSC OD STARTU
     int k_poprzedzajacy;
-    int sasiedzi[20][3]; /// LISTA SASIADOW MAX 20 (NUMER WIERZCHOLKA, WAGA)
+    int sasiedzi[100][3]; /// LISTA SASIADOW MAX 20 (NUMER WIERZCHOLKA, WAGA)
 };
 
 class graf
@@ -97,39 +97,41 @@ string AlgorytmDijkstry::Podaj_najkr_sciezke(int start, int koniec)
     int k_Act = start;
     graf_a->wierzcholki[k_Act].k_dist = 0;
     int k_najmniejsza = 99999999;
+    int k_Act_old = 0;
+    string sciezka = "";
 
 
     ///PETLA
     while(k_Act != koniec)
     {
-        cout << "==========================" << endl;
+        //cout << "==========================" << endl; ///TEST
 
         ///DODAJ SASIADOW k_Act (JEZELI STATUS 0)
 
 
         k_najmniejsza = 99999999;
         int sasiad_id = 0;
-        cout << "srawdzam sasiadow wierzcholka: " << graf_a->wierzcholki[k_Act].id << endl; ///TEST
+        //cout << "srawdzam sasiadow wierzcholka: " << graf_a->wierzcholki[k_Act].id << endl; ///TEST
         for(int i = 0; i < graf_a->wierzcholki[k_Act].liczba_pol; i++)
         {
 
             sasiad_id = graf_a->wierzcholki[k_Act].sasiedzi[i][0];
 
-            cout << "if(" << graf_a->wierzcholki[sasiad_id].k_dist << " > " << graf_a->wierzcholki[k_Act].sasiedzi[i][1] << " + " << graf_a->wierzcholki[k_Act].k_dist << ") ";
+            //cout << "if(" << graf_a->wierzcholki[sasiad_id].k_dist << " > " << graf_a->wierzcholki[k_Act].sasiedzi[i][1] << " + " << graf_a->wierzcholki[k_Act].k_dist << ") ";///TEST
 
 
             if(graf_a->wierzcholki[sasiad_id].status < 2 && graf_a->wierzcholki[sasiad_id].k_dist > (graf_a->wierzcholki[k_Act].sasiedzi[i][1] + graf_a->wierzcholki[k_Act].k_dist))
             {
 
-                cout << " podnieniam k_dist" << endl;
+                //cout << " podnieniam k_dist" << endl;///TEST
                 graf_a->wierzcholki[sasiad_id].k_poprzedzajacy = k_Act;
 
                 graf_a->wierzcholki[sasiad_id].k_dist = graf_a->wierzcholki[k_Act].sasiedzi[i][1] + graf_a->wierzcholki[k_Act].k_dist;
-                cout << "sasiad: " << sasiad_id << "   | k_pop: " << graf_a->wierzcholki[sasiad_id].k_poprzedzajacy << "   | k_dis: " << graf_a->wierzcholki[sasiad_id].k_dist << endl;
+                //cout << "sasiad: " << sasiad_id << "   | k_pop: " << graf_a->wierzcholki[sasiad_id].k_poprzedzajacy << "   | k_dis: " << graf_a->wierzcholki[sasiad_id].k_dist << endl;///TEST
 
                 if(graf_a->wierzcholki[sasiad_id].status == 0)
                 {
-                    cout << "kolejka push: " << kolejka.size() << " | id: " <<  sasiad_id << endl;
+                    //cout << "kolejka push: " << kolejka.size() << " | id: " <<  sasiad_id << endl;///TEST
                     kolejka.push_back(sasiad_id);
                     graf_a->wierzcholki[sasiad_id].status = 1;
                 }
@@ -139,17 +141,17 @@ string AlgorytmDijkstry::Podaj_najkr_sciezke(int start, int koniec)
 
 
         ///PETLA PO WPISACH
-
+        k_Act_old = k_Act;
         for(int id : kolejka)
         {
             ///SPRAWDZAJ I PODMIENIAJ NAJMNIEJSZA WAGE
-            cout << "sprawdzenie: id: " << id << " ... " << graf_a->wierzcholki[id].k_dist << " <= " << k_najmniejsza << endl;
+            //cout << "sprawdzenie: id: " << id << " ... " << graf_a->wierzcholki[id].k_dist << " <= " << k_najmniejsza << endl;///TEST
             if(graf_a->wierzcholki[id].k_dist <= k_najmniejsza)
             {
                 k_najmniejsza = graf_a->wierzcholki[id].k_dist;
                 ///USTAW k_Act NA WIERZCHOLEK Z NAJMNIEJASZA WAGA
                 k_Act = id;
-                cout << "graf_a->wierzcholki[id].id = " << graf_a->wierzcholki[id].id << endl;
+                //cout << "graf_a->wierzcholki[id].id = " << graf_a->wierzcholki[id].id << endl;///TEST
             }
         }
 
@@ -157,10 +159,10 @@ string AlgorytmDijkstry::Podaj_najkr_sciezke(int start, int koniec)
         graf_a->wierzcholki[k_Act].status = 2;
         ///USUN WIERZCHOLEK k_Act z kolejki
         int i = 0;
-        cout<< "szukanie do wywalenia: " << k_Act << endl;
+        //cout<< "szukanie do wywalenia: " << k_Act << endl;///TEST
         for (auto& w : kolejka)
         {
-            cout << i << " ; " << w << endl;
+            //cout << i << " ; " << w << endl;///TEST
 
 
             if (w == k_Act)
@@ -169,12 +171,17 @@ string AlgorytmDijkstry::Podaj_najkr_sciezke(int start, int koniec)
             }
             i++;
         }
-        cout << "wygrywa wierzcholek nr: " << k_Act << endl;
+        //cout << "wygrywa wierzcholek nr: " << k_Act << endl;///TEST
+        if(k_Act == k_Act_old)
+        {
+            sciezka = " !!! brak polaczenia";
+            break;
+        }
     }
 
     cout << "DONE" << endl;
 
-    string sciezka = to_string(k_Act);
+    sciezka = to_string(k_Act) + sciezka;
     int step = k_Act;
     while(step != start)
     {
@@ -188,8 +195,8 @@ string AlgorytmDijkstry::Podaj_najkr_sciezke(int start, int koniec)
 
 int main()
 {
-    graf g1("graf0.txt");
+    graf g1("graf4.txt");
     AlgorytmDijkstry a1(&g1);
-    cout << a1.Podaj_najkr_sciezke(1,15);
+    cout << a1.Podaj_najkr_sciezke(1,15000);
     return 0;
 }
