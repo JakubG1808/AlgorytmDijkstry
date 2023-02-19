@@ -93,7 +93,7 @@ int* AlgorytmDijkstry::Podaj_najkr_sciezke(int start, int koniec)
 
     ///WRZUC DO KOLEJKI WEZEL START DODAJ k_dist 0 I k_Poprzedzajacy 0 I k_Act = START
 
-    vector<pair<int, int>> kolejka;
+    vector<int> kolejka;
     int k_Act = start;
     graf_a->wierzcholki[k_Act].k_dist = 0;
     int k_najmniejsza = 99999999;
@@ -128,17 +128,14 @@ int* AlgorytmDijkstry::Podaj_najkr_sciezke(int start, int koniec)
                 cout << "sasiad: " << sasiad_id << "   | k_pop: " << graf_a->wierzcholki[sasiad_id].k_poprzedzajacy << "   | k_dis: " << graf_a->wierzcholki[sasiad_id].k_dist << endl;
 
                 cout << "kolejka push: " << kolejka.size() << " | id: " <<  sasiad_id << endl;
-                kolejka.push_back(make_pair(kolejka.size(), sasiad_id));
+                kolejka.push_back(sasiad_id);
             }
         }
 
         ///PETLA PO WPISACH
 
-        for(const pair<int, int>& element : kolejka)
+        for(int id : kolejka)
         {
-        int id = element.second;
-
-
             ///SPRAWDZAJ I PODMIENIAJ NAJMNIEJSZA WAGE
             cout << "sprawdzenie: " << graf_a->wierzcholki[id].k_dist << " < " << k_najmniejsza << endl;
             if(graf_a->wierzcholki[id].k_dist < k_najmniejsza)
@@ -146,14 +143,25 @@ int* AlgorytmDijkstry::Podaj_najkr_sciezke(int start, int koniec)
                 k_najmniejsza = graf_a->wierzcholki[id].k_dist;
                 ///USTAW k_Act NA WIERZCHOLEK Z NAJMNIEJASZA WAGA
                 k_Act = graf_a->wierzcholki[id].id;
-                miejsce = element.first;
             }
         }
 
         ///USTAW STATUS k_Act NA 1
         graf_a->wierzcholki[k_Act].status = 1;
         ///USUN WIERZCHOLEK k_Act z kolejki
-        kolejka.erase(kolejka.begin() + miejsce);
+        int i = 0;
+        cout<< "szukanie do wywalenia: " << k_Act << endl;
+        for (auto& w : kolejka)
+        {
+            cout << i << " ; " << w << endl;
+
+
+            if (w == k_Act)
+            {
+                kolejka.erase(kolejka.begin() + i);
+            }
+            i++;
+        }
         cout << "wygrywa wierzcholek nr: " << k_Act << endl;
     }
 
